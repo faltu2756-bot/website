@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dhiraj Kushwaha — Student Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0d0c0e;
+      --surface: #16141a;
+      --accent: #e8c97e;
+      --text: #f0ece4;
+      --muted: #8a8490;
+      --border: rgba(255,255,255,0.07);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      position: fixed;
+      width: 12px; height: 12px;
+      background: var(--accent);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+      mix-blend-mode: difference;
+    }
+    .cursor-ring {
+      position: fixed;
+      width: 40px; height: 40px;
+      border: 1px solid rgba(232,201,126,0.4);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 50;
+      padding: 24px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(13,12,14,0.95), transparent);
+      backdrop-filter: blur(4px);
+    }
+    .nav-logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: color 0.3s;
+      cursor: none;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-left {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 120px 64px 80px;
+      z-index: 2;
+    }
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 32px;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.2s forwards;
+    }
+    .hero-tag::before { content: ''; width: 32px; height: 1px; background: var(--accent); }
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3.5rem, 7vw, 6.5rem);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 8px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.4s forwards;
+    }
+    .hero-name span { color: var(--accent); font-style: italic; }
+    .hero-role {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-style: italic;
+      color: var(--muted);
+      margin-bottom: 40px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.55s forwards;
+    }
+    .hero-desc {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #b0aab8;
+      max-width: 400px;
+      margin-bottom: 52px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.7s forwards;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.85s forwards;
+    }
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: none;
+      cursor: none;
+      transition: all 0.3s;
+    }
+    .btn-primary { background: var(--accent); color: #0d0c0e; font-weight: 500; }
+    .btn-primary:hover { background: #f0d898; transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* HERO RIGHT */
+    .hero-right { position: relative; overflow: hidden; }
+    .hero-right::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, var(--bg) 0%, transparent 50%);
+      z-index: 2;
+    }
+    .hero-photo {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse at 60% 40%, rgba(232,201,126,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(201,107,107,0.06) 0%, transparent 50%),
+        var(--surface);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .photo-box {
+      width: 280px; height: 360px;
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      opacity: 0;
+      animation: fadeIn 1.2s 1s forwards;
+    }
+    .photo-box::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(145deg, rgba(232,201,126,0.05), rgba(201,107,107,0.05));
+    }
+    .photo-initials {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem; font-weight: 900;
+      color: rgba(232,201,126,0.2);
+    }
+    .photo-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 16px 20px;
+      background: rgba(13,12,14,0.85);
+      font-size: 0.72rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    .stat-card {
+      position: absolute;
+      background: rgba(22,20,26,0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      padding: 18px 22px;
+      z-index: 3;
+      top: 200px; right: 24px;
+      opacity: 0;
+      animation: slideLeft 0.8s 1.3s forwards;
+    }
+    .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem; font-weight: 700; color: var(--accent); line-height: 1;
+    }
+    .stat-label { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+    .hero-line {
+      position: absolute; bottom: 0; left: 0; right: 50%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--border), transparent);
+    }
+
+    /* SECTIONS */
+    section { padding: 120px 0; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+    .section-label {
+      font-size: 0.72rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .section-label::after { content: ''; flex: 1; max-width: 48px; height: 1px; background: var(--accent); opacity: 0.4; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3.5rem); font-weight: 700; line-height: 1.1; margin-bottom: 24px;
+    }
+
+    /* ABOUT */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .about-text p { font-size: 0.95rem; line-height: 1.9; color: #b0aab8; margin-bottom: 20px; }
+    .about-details { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 40px; }
+    .detail-item {
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 2px solid var(--accent);
+    }
+    .detail-key { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+    .detail-val { font-size: 0.9rem; color: var(--text); }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before { content: ''; position: absolute; left: 0; top: 8px; bottom: 8px; width: 1px; background: var(--border); }
+    .timeline-item { position: relative; padding-bottom: 40px; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+      content: ''; position: absolute; left: -32px; top: 6px;
+      width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+    }
+    .timeline-year { font-size: 0.72rem; letter-spacing: 0.15em; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; }
+    .timeline-school { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+    .timeline-degree { font-size: 0.85rem; color: var(--muted); line-height: 1.5; }
+
+    /* SKILLS */
+    .skills-section { background: var(--surface); }
+    .skills-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 60px; }
+    .skill-card { padding: 40px 32px; background: var(--bg); transition: background 0.3s; cursor: none; }
+    .skill-card:hover { background: rgba(232,201,126,0.03); }
+    .skill-icon {
+      width: 44px; height: 44px;
+      background: rgba(232,201,126,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 20px;
+    }
+    .skill-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; }
+    .skill-desc { font-size: 0.85rem; color: var(--muted); line-height: 1.7; }
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .tag {
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 4px 12px; border: 1px solid var(--border); color: var(--muted); transition: all 0.3s;
+    }
+    .skill-card:hover .tag { border-color: rgba(232,201,126,0.3); color: var(--text); }
+
+    /* CONTACT */
+    .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+    .contact-left p { color: var(--muted); font-size: 0.9rem; line-height: 1.8; margin-bottom: 40px; }
+    .contact-links { display: flex; flex-direction: column; gap: 16px; }
+    .contact-link {
+      display: flex; align-items: center; gap: 16px;
+      color: var(--text); text-decoration: none; font-size: 0.9rem;
+      padding: 16px 20px; border: 1px solid var(--border); transition: all 0.3s; cursor: none;
+    }
+    .contact-link:hover { border-color: var(--accent); color: var(--accent); }
+    .contact-link-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .form-group { margin-bottom: 20px; }
+    .form-group input, .form-group textarea {
+      width: 100%; padding: 16px 20px;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      outline: none; transition: border-color 0.3s; resize: none;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .form-group textarea { height: 120px; }
+    ::placeholder { color: var(--muted); }
+    .submit-btn {
+      width: 100%; padding: 16px;
+      background: var(--accent); color: #0d0c0e;
+      font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      border: none; cursor: none; transition: all 0.3s;
+    }
+    .submit-btn:hover { background: #f0d898; transform: translateY(-2px); }
+
+    /* FOOTER */
+    footer {
+      padding: 40px 48px; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    footer p { font-size: 0.78rem; color: var(--muted); }
+    .footer-logo { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--accent); font-weight: 700; }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.8s, transform 0.8s; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      nav { padding: 20px 24px; }
+      .nav-links { display: none; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-left { padding: 100px 24px 60px; }
+      .hero-right { display: none; }
+      .about-grid, .contact-inner { grid-template-columns: 1fr; gap: 48px; }
+      .skills-grid { grid-template-columns: 1fr; }
+      .container { padding: 0 24px; }
+      footer { flex-direction: column; gap: 12px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">DK.</div>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#skills">Skills</a></li>
+      <li><a href="#education">Education</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="hero-left">
+      <div class="hero-tag">Student &amp; Aspiring Developer</div>
+      <h1 class="hero-name">Dhiraj<br><span>Kushwaha.</span></h1>
+      <p class="hero-role">Computer Science &middot; East West Institute of Technology</p>
+      <p class="hero-desc">
+        A passionate student exploring the intersection of technology, design, and human experience.
+        Building meaningful things one line of code at a time.
+      </p>
+      <div class="hero-btns">
+        <a href="#contact" class="btn btn-primary">Get in touch</a>
+        <a href="#about" class="btn btn-outline">Learn more</a>
+      </div>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-photo">
+        <div class="photo-box">
+          <div class="photo-initials">DK</div>
+          <div class="photo-label">B.E. Computer Science &middot; VTU, Bangalore</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">12+</div>
+        <div class="stat-label">Projects</div>
+      </div>
+    </div>
+    <div class="hero-line"></div>
+  </header>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+
+        <div class="about-text reveal">
+          <p class="section-label">About me</p>
+          <h2 class="section-title">Curious mind, relentless learner.</h2>
+          <p>
+            Hi! I'm Dhiraj, a Computer Science student at East West Institute of Technology, Bangalore (VTU).
+            I'm passionate about building software that solves real problems, with a particular love for
+            web development, machine learning, and user experience design.
+          </p>
+          <p>
+            Outside of classes, I contribute to open-source projects, participate in hackathons,
+            and explore new technologies. I believe technology should be accessible and human-centered.
+          </p>
+          <div class="about-details">
+            <div class="detail-item">
+              <div class="detail-key">From</div>
+              <div class="detail-val">Kathmandu, Nepal</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-key">Major</div>
+              <div class="detail-val">Computer Science</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-key">University</div>
+              <div class="detail-val">VTU, Bangalore</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-key">Status</div>
+              <div class="detail-val">Open to Internships</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="reveal" id="education" style="transition-delay:0.15s">
+          <p class="section-label">Education</p>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-year">Present</div>
+              <div class="timeline-school">East West Institute of Technology</div>
+              <div class="timeline-degree">B.E. Computer Science &middot; Visvesvaraya Technological University (VTU), Bangalore</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-year">Completed</div>
+              <div class="timeline-school">Kathmandu Model College</div>
+              <div class="timeline-degree">+2 Science &middot; Higher Secondary Education, Nepal</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="skills-section">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">What I do</p>
+        <h2 class="section-title">Skills &amp; Interests.</h2>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-card reveal">
+          <div class="skill-icon">&#128187;</div>
+          <h3 class="skill-name">Web Development</h3>
+          <p class="skill-desc">Building fast, accessible, and visually polished web apps from front to back.</p>
+          <div class="skill-tags">
+            <span class="tag">React</span>
+            <span class="tag">Node.js</span>
+            <span class="tag">CSS</span>
+            <span class="tag">SQL</span>
+          </div>
+        </div>
+        <div class="skill-card reveal" style="transition-delay:0.1s">
+          <div class="skill-icon">&#129504;</div>
+          <h3 class="skill-name">Machine Learning</h3>
+          <p class="skill-desc">Exploring AI applications from NLP to computer vision with a research mindset.</p>
+          <div class="skill-tags">
+            <span class="tag">Python</span>
+            <span class="tag">PyTorch</span>
+            <span class="tag">Scikit-learn</span>
+          </div>
+        </div>
+        <div class="skill-card reveal" style="transition-delay:0.2s">
+          <div class="skill-icon">&#127775;</div>
+          <h3 class="skill-name">UI/UX Design</h3>
+          <p class="skill-desc">Crafting interfaces that feel intuitive, beautiful, and purposeful for real users.</p>
+          <div class="skill-tags">
+            <span class="tag">Figma</span>
+            <span class="tag">Design Systems</span>
+            <span class="tag">Prototyping</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-inner">
+
+        <div class="contact-left reveal">
+          <p class="section-label">Say hello</p>
+          <h2 class="section-title">Let's connect.</h2>
+          <p>Whether you have an internship opportunity, a collaboration idea, or just want to chat about tech &mdash; my inbox is open.</p>
+          <div class="contact-links">
+            <a href="mailto:dhiraj.kus.9@gmail.com" class="contact-link">
+              <span class="contact-link-icon">&#9993;</span>
+              Dhiraj kushwaha
+            </a>
+            <a href="https://www.linkedin.com/in/dhiraj-kushwaha-409274220/" class="contact-link" target="_blank" rel="noopener">
+              <span class="contact-link-icon">in</span>
+              dhiraj-kushwaha-409274220
+            </a>
+            <a href="https://github.com/Dhiraj513" class="contact-link" target="_blank" rel="noopener">
+              <span class="contact-link-icon">&#128279;</span>
+              Dhiraj513
+            </a>
+          </div>
+        </div>
+
+        <div class="reveal" style="transition-delay:0.15s">
+          <div class="form-group">
+            <input type="text" id="fname" placeholder="Your name" />
+          </div>
+          <div class="form-group">
+            <input type="email" id="femail" placeholder="Your email" />
+          </div>
+          <div class="form-group">
+            <textarea id="fmsg" placeholder="Your message..."></textarea>
+          </div>
+          <button class="submit-btn" id="submitBtn">Send Message</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-logo">DK.</div>
+    <p>&copy; 2026 Dhiraj Kushwaha. Designed with intention.</p>
+    <p>Computer Science &middot; East West Institute of Technology</p>
+  </footer>
+
+  <script>
+    // --- Custom cursor ---
+    var cursor = document.getElementById('cursor');
+    var ring   = document.getElementById('cursorRing');
+    var mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', function(e) {
+      mx = e.clientX; my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top  = my + 'px';
+    });
+
+    (function tick() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px';
+      ring.style.top  = ry + 'px';
+      requestAnimationFrame(tick);
+    })();
+
+    document.querySelectorAll('a, button, .skill-card').forEach(function(el) {
+      el.addEventListener('mouseenter', function() {
+        cursor.style.width  = '20px'; cursor.style.height = '20px';
+        ring.style.width    = '60px'; ring.style.height   = '60px';
+      });
+      el.addEventListener('mouseleave', function() {
+        cursor.style.width  = '12px'; cursor.style.height = '12px';
+        ring.style.width    = '40px'; ring.style.height   = '40px';
+      });
+    });
+
+    // --- Scroll reveal ---
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) e.target.classList.add('visible');
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
+
+    // --- Smooth scroll ---
+    document.querySelectorAll('a[href^="#"]').forEach(function(a) {
+      a.addEventListener('click', function(e) {
+        var t = document.querySelector(a.getAttribute('href'));
+        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth' }); }
+      });
+    });
+
+    // --- Form submit ---
+    document.getElementById('submitBtn').addEventListener('click', function() {
+      var name  = document.getElementById('fname').value.trim();
+      var email = document.getElementById('femail').value.trim();
+      var msg   = document.getElementById('fmsg').value.trim();
+      if (!name || !email || !msg) {
+        alert('Please fill in all fields.'); return;
+      }
+      alert('Thanks, ' + name + '! Dhiraj will get back to you soon.');
+      document.getElementById('fname').value  = '';
+      document.getElementById('femail').value = '';
+      document.getElementById('fmsg').value   = '';
+    });
+  </script>
+</body>
+</html>
